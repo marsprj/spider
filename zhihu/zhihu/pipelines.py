@@ -68,7 +68,7 @@ class TopicPipeline(object):
         photo_name = self.get_photo_name(item['photo'])
         photo_id   = photo_name[:-4]
         
-        self.save_image(photo_url,item['gender'].lower() + '_' + photo_name)
+#        self.save_image(photo_url,item['gender'].lower() + '_' + photo_name)
         
         query = self.dbpool.runInteraction(self.author_insert, item)
 
