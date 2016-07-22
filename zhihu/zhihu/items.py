@@ -7,11 +7,35 @@
 
 import scrapy
 
+#Topic Table
+# create table zh_topic (id int auto_increment,  
+#            tid int, title varchar(128), 
+#            parent varchar(128),
+#            description text,  primary key(id));
+
+#Question Table
+# create table zh_question (id int auto_increment,  
+#    qid int, 
+#    title varchar(128),
+#    description text,  
+#    topics varchar(128),
+#    follow_number int default 0,
+#    primary key(id));
+
 #Answer Table
+# create table zh_answer (id int auto_increment, 
+#            aid int, qid int, 
+#            title varchar(128), 
+#            author varchar(32), 
+#            author_name varchar(32), 
+#            upvote int default 0, 
+#            issue varchar(32), 
+#            content text, 
+#            primary key(id));
 
 #Author Table
 #create table zh_author (id int auto_increment,
-#			aid int,
+#			aid varchar(32),
 #			name varchar(64),
 #			gender varchar(8) default 'F',
 #			bio varchar(64),
@@ -22,10 +46,10 @@ import scrapy
 #			content text,
 #			upvote int default 0,
 #			thanks int default 0,
-#			asks rint default 0,
-#			answers rint default 0,
-#			posts rint default 0,
-#			collections rint default 0,
+#			asks int default 0,
+#			answers int default 0,
+#			posts int default 0,
+#			collections int default 0,
 #			logs int default 0,
 #			followees  int default 0,
 #			followers  int default 0,
@@ -88,3 +112,8 @@ class AuthorItem(scrapy.Item):
     followers = scrapy.Field()
     visits = scrapy.Field()
     photo = scrapy.Field()
+
+class PhotoItem(scrapy.Item):
+    typ = scrapy.Field()
+    photo = scrapy.Field()
+    gender = scrapy.Field()

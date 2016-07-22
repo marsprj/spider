@@ -49,6 +49,8 @@ class TopicPipeline(object):
                 query = self.dbpool.runInteraction(self.answer_insert, item)
             elif item['typ'] == u'author':
                 self.process_author(item)
+	elif spider.name==u'photo':
+            self.process_photo(item)
         return item
 
     def topic_insert(self, tx, item):
@@ -85,3 +87,11 @@ class TopicPipeline(object):
     def save_image(self, url, name):
         fpath = os.path.join(self.base_dir, name)
         urllib.urlretrieve(url, fpath)
+
+    def process_photo(self, item):
+        photo_url  = item['photo']
+        photo_name = self.get_photo_name(item['photo'])
+        photo_id   = photo_name[:-4]
+        
+        self.save_image(photo_url,item['gender'].lower() + '_' + photo_name)
+

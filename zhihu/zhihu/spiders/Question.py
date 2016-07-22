@@ -5,7 +5,7 @@ import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
-from zhihu.items import QuestionItem, AnswerItem,AuthorItem
+from zhihu.items import QuestionItem, AnswerItem,AuthorItem,TopicItem
 
 #create table zh_answer (id int auto_increment, aid int, qid int, title varchar(128), author varchar(32), upvote varchar(16), issue varchar(32), content text, primary key(id));
 
@@ -16,18 +16,42 @@ class QuestionSpider(CrawlSpider):
 	start_urls = [
 		'https://www.zhihu.com/explore',
 #		'https://www.zhihu.com/question/41351785',
+#		'https://www.zhihu.com/topic/19553622',
 	]
 
 	rules = (
 		Rule(LinkExtractor(allow=r'https://www.zhihu.com/'), follow=True),
 		Rule(LinkExtractor(allow=r'https://www.zhihu.com/explore$'), follow=True),
-		Rule(LinkExtractor(allow=r'/topic/\d+$'),  follow=True),
+#		Rule(LinkExtractor(allow=r'/topic/[^/]+'), callback='parse_topic', follow=True),
+		Rule(LinkExtractor(allow=r'/topic/\d+$'), callback='parse_topic'),
+		Rule(LinkExtractor(allow=r'/topic/\d+/hot$'), callback='parse_topic'),
 		Rule(LinkExtractor(allow=r'/question/\d+$'), callback='parse_question', follow=True),
-#		Rule(LinkExtractor(allow=r'/question/\d+/answer/\d+'), follow=True),
-#		Rule(LinkExtractor(allow=r'/question/\d+/answer/\d+')),
 		Rule(LinkExtractor(allow=r'/question/\d+/answer/\d+'), callback='parse_answer'),
 		Rule(LinkExtractor(allow=r'/people/[^/]+', allow_domains=['zhihu.com']), callback='parse_people',follow=True),
 	)
+
+	def parse_topic(self, response):
+		print "sssssssssssssssssssssssssssssssssssssssssssssssssssss"
+		t = TopicItem()
+		t['typ'] = u'topic'
+		t['title'] = response.xpath('//h1[@class="zm-editable-content"]/text()').extract()
+		t['description'] = response.xpath('//div[@class="zm-editable-content"]/text()').extract()
+		t['parent'] = self.format_topic_parents(response.xpath('//div[@id="zh-topic-side-parents-list"]/div/div/a/@href').extract())
+		t['tid'] = self.get_topic_id(response.url)
+    
+		yield t
+
+	def format_topic_parents(self, parents):
+		pids = [e.split('/')[-1] for e in parents]
+		return ','.join(pids)
+
+	def get_topic_id(self, url):
+		if url[-3:] == 'hot':
+			tid = response.url.split('/')[-2]
+		else:
+			tid = response.url.split('/')[-1]
+                return tid  
+
 
 	def parse_question(self, response):
 		q = QuestionItem()
