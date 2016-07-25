@@ -112,7 +112,8 @@ class QuestionSpider(CrawlSpider):
 		return response.xpath("//a[@class='author-link']/text()").extract()[0] 
 
 	def get_answer_upvote(self, response):
-		return string.atoi(response.xpath("//span[@class='count']/text()").extract()[0])
+		str = response.xpath("//span[@class='count']/text()").extract()[0]
+		return self.get_number(str)
 		#return response.xpath("//span[@class='count']/text()").extract()[0]
 
 	def get_answer_issue(self, response):
@@ -192,34 +193,53 @@ class QuestionSpider(CrawlSpider):
 		return arr[0].strip() if any(arr) else u''
 
 	def get_author_upvote(self, response):
-		return string.atoi(response.xpath('//span[@class="zm-profile-header-user-agree"]/strong/text()').extract()[0]) 
+		str = response.xpath('//span[@class="zm-profile-header-user-agree"]/strong/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_thanks(self, response):
-		return string.atoi(response.xpath('//span[@class="zm-profile-header-user-thanks"]/strong/text()').extract()[0]) 
+		str = response.xpath('//span[@class="zm-profile-header-user-thanks"]/strong/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_asks(self, response):
-		return string.atoi(response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/asks")]/span/text()').extract()[0])
+		str = response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/asks")]/span/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_answers(self, response):
-		return string.atoi(response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/answers")]/span/text()').extract()[0])
+		str = response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/answers")]/span/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_posts(self, response):
-		return string.atoi(response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/posts")]/span/text()').extract()[0])
+		str = response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/posts")]/span/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_collections(self, response):
-		return string.atoi(response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/collections")]/span/text()').extract()[0])
+		str = response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/collections")]/span/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_logs(self, response):
-		return string.atoi(response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/logs")]/span/text()').extract()[0])
+		str = response.xpath('//div[@class="profile-navbar clearfix"]/a[contains(@href,"/logs")]/span/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_followees(self, response):
-		return string.atoi(response.xpath('//div[@class="zm-profile-side-following zg-clear"]/a[contains(@href,"/followees")]/strong/text()').extract()[0])
+		str = response.xpath('//div[@class="zm-profile-side-following zg-clear"]/a[contains(@href,"/followees")]/strong/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_followers(self, response):
-		return string.atoi(response.xpath('//div[@class="zm-profile-side-following zg-clear"]/a[contains(@href,"/followers")]/strong/text()').extract()[0])
+		str = response.xpath('//div[@class="zm-profile-side-following zg-clear"]/a[contains(@href,"/followers")]/strong/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_visits(self, response):
-		return string.atoi(response.xpath('//div[@class="zm-side-section-inner"]/span/strong/text()').extract()[0])
+		str = response.xpath('//div[@class="zm-side-section-inner"]/span/strong/text()').extract()[0]
+		return self.get_number(str)
 
 	def get_author_photo(self, response):
 		return response.xpath('//div[@class="zm-profile-header-main"]/div/img/@srcset').extract()[0].split(' ')[0]
+
+	def get_number(self, str):
+		if str[-1] == 'K':
+			return string.atoi(str[:-1]) * 1000
+		elif str[-1] == 'M':
+			return string.atoi(str[:-1]) * 1000 * 1000
+		else:
+			return string.atoi(str)
+

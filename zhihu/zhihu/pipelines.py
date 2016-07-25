@@ -8,6 +8,7 @@
 from twisted.enterprise import adbapi
 import MySQLdb
 import MySQLdb.cursors
+import psycopg2
 import string
 import os
 import os.path
@@ -24,18 +25,25 @@ class TopicPipeline(object):
         if os.path.exists(self.base_dir) != True:
             os.mkdir(self.base_dir)
 
+#    def open_spider(self, spider):
+#        self.dbpool = adbapi.ConnectionPool(
+#            dbapiName = 'psycopg2',
+#            host = 'localhost',
+#            host = '192.168.111.155',
+#            user = 'root',
+#            cursorclass = MySQLdb.cursors.DictCursor,
+#            charset = 'utf8',
+#            use_unicode = False
+#        )
+
     def open_spider(self, spider):
         self.dbpool = adbapi.ConnectionPool(
-            dbapiName = 'MySQLdb',
-            host = 'localhost',
-            db = 'spider',
-            user = 'root',
-            passwd = 'qwer1234',
-            cursorclass = MySQLdb.cursors.DictCursor,
-            charset = 'utf8',
-            use_unicode = False
+            dbapiName = 'psycopg2',
+            host = '127.0.0.1',
+            database = 'spider',
+            user = 'postgres',
+            password = 'qwer1234',
         )
-
     def close_spider(self, spider):
         pass
 
@@ -54,15 +62,15 @@ class TopicPipeline(object):
         return item
 
     def topic_insert(self, tx, item):
-        sql  = 'insert into zh_topic(tid,title,description,parent) value(%s,%s,%s,%s)'
+        sql  = 'insert into zh_topic(tid,title,description,parent) values(%s,%s,%s,%s)'
         tx.execute(sql, (item['tid'], item['title'], item['description'], item['parent']))
 
     def question_insert(self, tx, item):
-        sql  = 'insert into zh_question(qid,title,description,topics,follow_number) value(%s,%s,%s,%s,%s)'
+        sql  = 'insert into zh_question(qid,title,description,topics,follow_number) values(%s,%s,%s,%s,%s)'
         tx.execute(sql, (item['qid'], item['title'], item['description'], item['topics'], item['follow_number']))
 
     def answer_insert(self, tx, item):
-        sql  = 'insert into zh_answer(aid, qid,author, author_name, upvote, issue, content) value(%s,%s,%s,%s,%s,%s,%s)'
+        sql  = 'insert into zh_answer(aid, qid,author, author_name, upvote, issue, content) values(%s,%s,%s,%s,%s,%s,%s)'
         tx.execute(sql, (item['aid'], item['qid'], item['author'], item['author_name'], item['upvote'], item['issue'], item['content']))
 
     def process_author(self, item):
