@@ -74,6 +74,7 @@ class QuestionSpider(CrawlSpider):
 		a['upvote'] = self.get_answer_upvote(response)
 		a['issue'] = self.get_answer_issue(response)
 		a['content'] = self.get_answer_content(response)
+		a['html_content'] = self.get_answer_content(response)
 		
 		yield a
 
@@ -123,6 +124,9 @@ class QuestionSpider(CrawlSpider):
 	def get_answer_content(self, response):
 		return ''.join(response.xpath("//div[@class='zm-editable-content clearfix']/text()").extract())
 		#return u'content'
+
+	def get_answer_html_content(self, response):
+		return response.xpath("//div[@class='zm-editable-content clearfix']").extract()[0]
 
 	###################################################################
 	# people methods

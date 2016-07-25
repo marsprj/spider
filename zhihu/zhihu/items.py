@@ -37,6 +37,7 @@
 #            upvote int default 0, 
 #            issue character varying(32), 
 #            content text, 
+#            html_content text, 
 #            primary key(id),
 #            CONSTRAINT zh_answer_qid_uk UNIQUE (aid));
 
@@ -206,6 +207,7 @@ class AnswerItem(scrapy.Item):
     upvote = scrapy.Field()
     issue = scrapy.Field()
     content = scrapy.Field()
+    html_content = scrapy.Field()
 
 class AuthorItem(scrapy.Item):
     typ = scrapy.Field()

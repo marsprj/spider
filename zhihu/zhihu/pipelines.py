@@ -39,7 +39,7 @@ class TopicPipeline(object):
     def open_spider(self, spider):
         self.dbpool = adbapi.ConnectionPool(
             dbapiName = 'psycopg2',
-            host = '127.0.0.1',
+            host = '192.168.111.160',
             database = 'spider',
             user = 'postgres',
             password = 'qwer1234',
@@ -70,8 +70,8 @@ class TopicPipeline(object):
         tx.execute(sql, (item['qid'], item['title'], item['description'], item['topics'], item['follow_number']))
 
     def answer_insert(self, tx, item):
-        sql  = 'insert into zh_answer(aid, qid,author, author_name, upvote, issue, content) values(%s,%s,%s,%s,%s,%s,%s)'
-        tx.execute(sql, (item['aid'], item['qid'], item['author'], item['author_name'], item['upvote'], item['issue'], item['content']))
+        sql  = 'insert into zh_answer(aid, qid,author, author_name, upvote, issue, content, html_content) values(%s,%s,%s,%s,%s,%s,%s,%s)'
+        tx.execute(sql, (item['aid'], item['qid'], item['author'], item['author_name'], item['upvote'], item['issue'], item['content'], item['html_content']))
 
     def process_author(self, item):
         photo_url  = item['photo']
