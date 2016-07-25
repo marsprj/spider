@@ -47,12 +47,12 @@ class TopMoviePipeline(object):
 #        print item['actors']
 #        print item['year']
 #        print item['abstract']
-#        tx.execute(sql, (item['name'][0:],item['director'][0:],item['actors'][0:],item['year'][0:],item['abstract'][0:]))
-#        tx.execute(sql, (item['name'][0:],item['director'][0:],item['actors'][0:],item['abstract'][0:]))
-#        tx.execute(sql, (item['name'][0:], item['director'][0:], item['actors'][0:],item['year'][0:] ))
-#        tx.execute(sql, (item['name'][0:], item['director'][0:], item['abstract'][0:]))
-        tx.execute(sql, (item['name'][0:], item['director'][0:], item['actors'][0:]))
-#        tx.execute(sql, (item['name'][0:]))
+#        tx.execute(sql, (item['name'],item['director'],item['actors'],item['year'],item['abstract']))
+#        tx.execute(sql, (item['name'],item['director'],item['actors'],item['abstract']))
+#        tx.execute(sql, (item['name'], item['director'], item['actors'],item['year'] ))
+#        tx.execute(sql, (item['name'], item['director'], item['abstract']))
+        tx.execute(sql, (item['name'], item['director'], item['actors']))
+#        tx.execute(sql, (item['name']))
 
 
 class MoviePipeline(object):
@@ -78,22 +78,5 @@ class MoviePipeline(object):
 	return item
 
     def _condition_insert(self, tx, item):
-#        sql = 'insert into db_movie_top250(name, director, actors, year, abstract) values(%s,%s,%s,%d,%s)'
-#        sql = 'insert into db_movie_top250(name, director, actors, abstract) values(%s,%s,%s,%s)'
-#        sql = 'insert into db_movie_top250(name, director,actors,year) values(%s,%s,%s,%s)'
-#        sql = 'insert into db_movie_top250(name, director,abstract) values(%s,%s,%s)'
-#        sql = 'insert into db_movie(name, director,actors) values(%s,%s,%s)'
-        sql = 'insert into db_movie(name, director,editor,actors, type, country, language, issue, year, abstract, rating, rating_people) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-#        sql = 'insert into db_movie_top250(name values(%s)'
-#        print item['name']
-#        print item['director']
-#        print item['actors']
-#        print item['year']
-#        print item['abstract']
-#        tx.execute(sql, (item['name'][0:],item['director'][0:],item['actors'][0:],item['year'][0:],item['abstract'][0:]))
-#        tx.execute(sql, (item['name'][0:],item['director'][0:],item['actors'][0:],item['abstract'][0:]))
-#        tx.execute(sql, (item['name'][0:], item['director'][0:], item['actors'][0:],item['year'][0:] ))
-#        tx.execute(sql, (item['name'][0:], item['director'][0:], item['abstract'][0:]))
-        tx.execute(sql, (item['name'][0:], item['director'][0:], item['editor'][0:],item['actors'][0:], item['mtype'][0:], item['country'][0:], item['language'][0:], item['issue'][0:], item['year'][0:],item['abstract'][0:], item['rating'][0:], item['rating_people'][0:]))
-#        tx.execute(sql, (item['name'][0:]))
-
+        sql = 'insert into db_movie(name, director,editor,actors, type, runtime, country, language, issue, year, abstract, rating, rating_people) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        tx.execute(sql, (item['name'], item['director'], item['editor'],item['actors'], item['mtype'], item['runtime'], item['country'], item['language'], item['issue'], item['year'],item['abstract'], item['rating'], item['rating_people']))

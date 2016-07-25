@@ -35,6 +35,7 @@ class MovieItem(scrapy.Item):
     director = scrapy.Field()
     actors = scrapy.Field()
     mtype = scrapy.Field()
+    runtime = scrapy.Field()
     country = scrapy.Field()
     language = scrapy.Field()
     issue = scrapy.Field()
