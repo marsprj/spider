@@ -10,6 +10,7 @@
 ###################################################
 #create table db_movie(
 #    id serial,
+#    mid character varying(128),
 #    name character varying(128),
 #    director character varying(128),
 #    writer character varying(128),
@@ -25,6 +26,7 @@
 #    rating_people int default 0,
 #    primary key(id),
 #    CONSTRAINT db_movie_name_uk UNIQUE (name)
+#    CONSTRAINT db_movie_mid_uk UNIQUE (mid)
 #);
 
 ###################################################
