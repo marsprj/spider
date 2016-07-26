@@ -8,6 +8,7 @@
 from twisted.enterprise import adbapi
 import MySQLdb
 import MySQLdb.cursors
+import psycopg2
 
 class DoubanPipeline(object):
     def process_item(self, item, spider):
@@ -16,15 +17,23 @@ class DoubanPipeline(object):
 class TopMoviePipeline(object):
     def open_spider(self,spider):
         self.dbpool = adbapi.ConnectionPool(
-            dbapiName = 'MySQLdb',
-            host = '127.0.0.1',
-            db = 'spider',
-            user = 'root',
-            passwd = 'qwer1234',
-            cursorclass = MySQLdb.cursors.DictCursor,
-            charset = 'utf8',
-            use_unicode = False
+            dbapiName = 'psycopg2',
+            host = '192.168.111.160',
+            database = 'spider',
+            user = 'postgres',
+            password = 'qwer1234',
         )
+#    def open_spider(self,spider):
+#        self.dbpool = adbapi.ConnectionPool(
+#            dbapiName = 'MySQLdb',
+#            host = '192.168.111.86',
+#            db = 'spider',
+#            user = 'root',
+#            password = 'qwer1234',
+#            cursorclass = MySQLdb.cursors.DictCursor,
+#            charset = 'utf8',
+#            use_unicode = False
+#        )
 
     def close_spider(self,spider):
         pass
@@ -58,15 +67,22 @@ class TopMoviePipeline(object):
 class MoviePipeline(object):
     def open_spider(self,spider):
         self.dbpool = adbapi.ConnectionPool(
-            dbapiName = 'MySQLdb',
-            host = '127.0.0.1',
-            db = 'spider',
-            user = 'root',
-            passwd = 'qwer1234',
-            cursorclass = MySQLdb.cursors.DictCursor,
-            charset = 'utf8',
-            use_unicode = False
+            dbapiName = 'psycopg2',
+            host = '192.168.111.160',
+            database = 'spider',
+            user = 'postgres',
+            password = 'qwer1234',
         )
+#        self.dbpool = adbapi.ConnectionPool(
+#            dbapiName = 'MySQLdb',
+#            host = 'localhost',
+#            db = 'spider',
+#            user = 'root',
+#            password = 'qwer1234',
+#            cursorclass = MySQLdb.cursors.DictCursor,
+#            charset = 'utf8',
+#            use_unicode = False
+#        )
 
     def close_spider(self,spider):
         pass
@@ -78,5 +94,9 @@ class MoviePipeline(object):
 	return item
 
     def _condition_insert(self, tx, item):
-        sql = 'insert into db_movie(name, director,editor,actors, type, runtime, country, language, issue, year, abstract, rating, rating_people) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-        tx.execute(sql, (item['name'], item['director'], item['editor'],item['actors'], item['mtype'], item['runtime'], item['country'], item['language'], item['issue'], item['year'],item['abstract'], item['rating'], item['rating_people']))
+#        sql = 'insert into db_movie(name, director,writer,actors, type, runtime, country, language, issue, year) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+#        tx.execute(sql, (item['name'], item['director'], item['writer'],item['actors'], item['mtype'], item['runtime'], item['country'], item['language'], item['issue'], item['year']))
+
+
+        sql = 'insert into db_movie(mid, name, director,writer,actors, type, runtime, country, language, issue, year, abstract, rating, rating_people) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        tx.execute(sql, (item['mid'],item['name'], item['director'], item['writer'],item['actors'], item['mtype'], item['runtime'], item['country'], item['language'], item['issue'], item['year'],item['abstract'], item['rating'], item['rating_people']))

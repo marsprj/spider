@@ -4,6 +4,7 @@ from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 from scrapy.linkextractor import LinkExtractor
 from douban.items import MovieItem
+import string
 
 class MovieSpider(CrawlSpider):
 	name = 'movie'
@@ -27,9 +28,10 @@ class MovieSpider(CrawlSpider):
 		item = MovieItem()
 		#item['subject_id'] = response.url.split("/")[-1]
 		#item['url'] = response.url
+		item['mid'] = self.get_mid(response)
 		item['name'] = self.get_name(response)
 		item['director'] = self.get_director(response)
-		item['editor'] = self.get_editor(response)
+		item['writer'] = self.get_writer(response)
 		item['actors'] = self.get_actors(response)
 		item['mtype'] = self.get_mtype(response)
 		item['runtime'] = self.get_runtime(response)
@@ -45,13 +47,20 @@ class MovieSpider(CrawlSpider):
 
 		yield item
 
+	def get_mid(self, response):
+		if response.url[-1] == '/':
+			return response.url.split('/')[-1]
+		else:
+			return response.url.split('/')[-2]
+
 	def get_name(self, response):
 		return response.xpath('//div[@id="content"]/h1/span/text()').extract()[0]
 	
 	def get_director(self, response):
-		return response.xpath(u'//span[contains(text(),"导演")]/following-sibling::span/a/text()').extract()[0]
+		arr =  response.xpath(u'//span[contains(text(),"导演")]/following-sibling::span/a/text()').extract()
+		return arr[0] if any(arr) else u''
 
-	def get_editor(self, response):
+	def get_writer(self, response):
 		arr = response.xpath(u'//span[contains(text(),"编剧")]/following-sibling::span/a/text()').extract()
 		return ','.join(arr)
 
@@ -60,15 +69,27 @@ class MovieSpider(CrawlSpider):
 		return ','.join(arr)
 
 	def get_mtype(self, response):
-		arr = response.xpath(u'//span[contains(text(),"类型")]/following-sibling::span/a/text()').extract()
+		arr = response.xpath(u'//span[@property="v:genre"]/text()').extract()
 		return ','.join(arr)
 
 	def get_year(self, response):
-		return ''.join(x.xpath('//*[@id="content"]/h1/span[2]/text()').extract()).strip()[1:-1]
+		return ''.join(response.xpath('//*[@id="content"]/h1/span[2]/text()').extract()).strip()[1:-1]
 		
 	def get_country(self, response):
 		arr = response.xpath(u'//span[contains(text(),"制片国家")]/text()').extract()
-		return arr[0] if any(arr) else u''
+		if any(arr):
+			tag_name = arr[0]
+			parent_text = response.xpath(u'//span[contains(text(),"制片国家")]/parent::*').extract()[0]
+			tag_pos = parent_text.find(tag_name)
+			if tag_pos == -1:
+				return u''
+			right_text = parent_text[tag_pos:]
+			brace_pos = right_text.find('>')
+			br_pos = right_text.find('<br>')
+			countries = right_text[brace_pos+1:br_pos].strip()
+			return ','.join([s.strip() for s in countries.split('/')])
+		else:
+			return u''
 
 	def get_language(self, response):
 		parent_text = response.xpath(u'//span[contains(text(),"语言")]/parent::*').extract()[0]
@@ -78,7 +99,8 @@ class MovieSpider(CrawlSpider):
 		right_text = parent_text[language_pos:]
 		brace_pos = right_text.find('>')
 		br_pos = right_text.find('<br>')
-		return right_text[brace_pos+1:br_pos].strip()
+		languages  = right_text[brace_pos+1:br_pos].strip()
+		return ','.join([s.strip() for s in languages.split('/')])
 
 	def get_issue(self, response):
 		arr = response.xpath(u'//span[contains(text(),"上映日期")]/following-sibling::span[@property="v:initialReleaseDate"]/@content').extract()
@@ -88,10 +110,13 @@ class MovieSpider(CrawlSpider):
 		return ''.join((response.xpath(u'//div[@id="link-report"]/span/text()').extract())).strip()
 
 	def get_rating(self, response):
-		return string.atof(response.xpath(u'//strong[@class="ll rating_num"]/text()').extract()[0])
+		arr = response.xpath(u'//strong[@class="ll rating_num"]/text()').extract()
+		return string.atof(arr[0]) if any(arr) else 0.0
 
 	def get_rating_people(self, response):
-		return string.atoi(response.xpath(u'//span[@property="v:votes"]/text()').extract()[0])
+		arr = response.xpath(u'//span[@property="v:votes"]/text()').extract()
+		return string.atoi(arr[0]) if any(arr) else 0
 
-	def get_run_time(self, response):
-		return string.atoi(response.xpath(u'//span[@property="v:runtime"]/@content').extract()[0])
+	def get_runtime(self, response):
+		arr = response.xpath(u'//span[@property="v:runtime"]/@content').extract()
+		return string.atoi(arr[0]) if any(arr) else 0
