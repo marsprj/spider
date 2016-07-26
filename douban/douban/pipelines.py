@@ -98,5 +98,5 @@ class MoviePipeline(object):
 #        tx.execute(sql, (item['name'], item['director'], item['writer'],item['actors'], item['mtype'], item['runtime'], item['country'], item['language'], item['issue'], item['year']))
 
 
-        sql = 'insert into db_movie(mid, name, director,writer,actors, type, runtime, country, language, issue, year, abstract, rating, rating_people) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+        sql = 'insert into db_movie_2(mid, name, director,writer,actors, type, runtime, country, language, issue, year, abstract, rating, rating_people) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
         tx.execute(sql, (item['mid'],item['name'], item['director'], item['writer'],item['actors'], item['mtype'], item['runtime'], item['country'], item['language'], item['issue'], item['year'],item['abstract'], item['rating'], item['rating_people']))

@@ -19,13 +19,13 @@
 #    year int default 0,
 #    abstract text,
 #    type character varying(128),
-#    country character varying(32),
-#    language character varying(32),
-#    issue character varying(32),
-#    ratint double precision,
+#    country character varying(128),
+#    language character varying(128),
+#    issue character varying(128),
+#    rating double precision,
 #    rating_people int default 0,
 #    primary key(id),
-#    CONSTRAINT db_movie_name_uk UNIQUE (name)
+#    CONSTRAINT db_movie_name_uk UNIQUE (name),
 #    CONSTRAINT db_movie_mid_uk UNIQUE (mid)
 #);
 

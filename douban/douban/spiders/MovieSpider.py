@@ -49,9 +49,9 @@ class MovieSpider(CrawlSpider):
 
 	def get_mid(self, response):
 		if response.url[-1] == '/':
-			return response.url.split('/')[-1]
-		else:
 			return response.url.split('/')[-2]
+		else:
+			return response.url.split('/')[-1]
 
 	def get_name(self, response):
 		return response.xpath('//div[@id="content"]/h1/span/text()').extract()[0]
