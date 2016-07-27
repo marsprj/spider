@@ -14,12 +14,14 @@ class MojiItem(scrapy.Item):
     pass
 
 class ImageItem(scrapy.Item):
+    typ = scrapy.Field()
     pid = scrapy.Field()
     country = scrapy.Field()
     province = scrapy.Field()
-    disrict = scrapy.Field()
+    district = scrapy.Field()
     location = scrapy.Field()
     lon = scrapy.Field()
     lat = scrapy.Field()
     ptime = scrapy.Field()
     pname = scrapy.Field()
+    url = scrapy.Field()
