@@ -92,15 +92,19 @@ class MovieSpider(CrawlSpider):
 			return u''
 
 	def get_language(self, response):
-		parent_text = response.xpath(u'//span[contains(text(),"语言")]/parent::*').extract()[0]
-		language_pos = parent_text.find(u'语言')
-		if language_pos == -1:
+		arr = response.xpath(u'//span[contains(text(),"语言")]/parent::*').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"语言")]/parent::*').extract()[0]
+			language_pos = parent_text.find(u'语言')
+			if language_pos == -1:
+				return u''
+			right_text = parent_text[language_pos:]
+			brace_pos = right_text.find('>')
+			br_pos = right_text.find('<br>')
+			languages  = right_text[brace_pos+1:br_pos].strip()
+			return ','.join([s.strip() for s in languages.split('/')])
+		else:
 			return u''
-		right_text = parent_text[language_pos:]
-		brace_pos = right_text.find('>')
-		br_pos = right_text.find('<br>')
-		languages  = right_text[brace_pos+1:br_pos].strip()
-		return ','.join([s.strip() for s in languages.split('/')])
 
 	def get_issue(self, response):
 		arr = response.xpath(u'//span[contains(text(),"上映日期")]/following-sibling::span[@property="v:initialReleaseDate"]/@content').extract()
