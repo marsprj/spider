@@ -13,6 +13,7 @@ class MovieSpider(CrawlSpider):
 	]
 
 	start_urls = [
+		'https://movie.douban.com/',
 		'https://movie.douban.com/tag/',
 	]
 
