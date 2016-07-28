@@ -7,7 +7,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from moji.items import ImageItem
 
 class ImageSpider(CrawlSpider):
-	name = u'image'
+	name = u'moji'
 	allowed_domains = ['moji.com']
 	start_urls = [
 		'http://tianqi.moji.com/liveview',

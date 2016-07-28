@@ -13,8 +13,6 @@ class MovieSpider(CrawlSpider):
 	]
 
 	start_urls = [
-		'https://movie.douban.com/subject/26599625/all_photos',
-		'https://movie.douban.com/subject/26599625/photos?type=S',
 		'https://movie.douban.com/tag/',
 		'https://movie.douban.com/subject/1297011/',
 		'https://movie.douban.com/tag/%E7%83%82%E7%89%87',
