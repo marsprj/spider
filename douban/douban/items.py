@@ -58,6 +58,7 @@ class DoubanItem(scrapy.Item):
 
 
 class MovieItem(scrapy.Item):
+    typ = scrapy.Field()
     tag = scrapy.Field()
     mid = scrapy.Field()
     name = scrapy.Field()
@@ -73,3 +74,23 @@ class MovieItem(scrapy.Item):
     rating_people = scrapy.Field()
     year = scrapy.Field()
     abstract = scrapy.Field()
+
+class ActorItem(scrapy.Item):
+    typ = scrapy.Field()
+    aid = scrapy.Field()
+    name = scrapy.Field()
+    gender = scrapy.Field()
+    constellation = scrapy.Field()
+    birthday = scrapy.Field()
+    birthplace = scrapy.Field()
+    profession = scrapy.Field()
+    fname = scrapy.Field()
+    ename = scrapy.Field()
+    cname = scrapy.Field()
+    family = scrapy.Field()
+    imdb = scrapy.Field()
+
+class ImageItem(scrapy.Item):
+    typ = scrapy.Field()
+    url = scrapy.Field()
+    mid = scrapy.Field()

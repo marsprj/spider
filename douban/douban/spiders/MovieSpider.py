@@ -3,7 +3,7 @@
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 from scrapy.linkextractor import LinkExtractor
-from douban.items import MovieItem
+from douban.items import MovieItem,ImageItem,ActorItem
 import string
 
 class MovieSpider(CrawlSpider):
@@ -13,19 +13,40 @@ class MovieSpider(CrawlSpider):
 	]
 
 	start_urls = [
+		'https://movie.douban.com/subject/26599625/all_photos',
+		'https://movie.douban.com/subject/26599625/photos?type=S',
 		'https://movie.douban.com/tag/',
+		'https://movie.douban.com/subject/1297011/',
+		'https://movie.douban.com/tag/%E7%83%82%E7%89%87',
+		'https://movie.douban.com/subject/26599625/',
+		'https://movie.douban.com/tag/%E7%BA%AA%E5%BD%95%E7%89%87',
+		'https://movie.douban.com/subject/10741871/',
+		'https://movie.douban.com/celebrity/1049485/'
 	]
 
 	rules = [
 		Rule(LinkExtractor(allow=('/tag/$')), follow=True),
 		Rule(LinkExtractor(allow=('/tag/[^/]+/?$')), follow=True),
+		Rule(LinkExtractor(allow=('/tag/[^/]+\?start=\d+&type=T$')), follow=True),
+		Rule(LinkExtractor(allow=('/subject/\d+/\?from=subject-page$')), follow=True, callback='parse_movie'),
 		Rule(LinkExtractor(allow=('https://movie.douban.com/subject/\d+/$')), callback='parse_movie'),
+
+		Rule(LinkExtractor(allow=('/subject/\d+/all_photos$')), follow=True),
+		Rule(LinkExtractor(allow=('/subject/\d+/photos$')), follow=True, callback='parse_image'),
+		Rule(LinkExtractor(allow=('/subject/\d+/photos\?type=S$')), follow=True, callback='parse_image'),
+		Rule(LinkExtractor(allow=('/subject/\d+/photos\?type=S&start=\d+&sortby=vote&size=a&subtype=a$')), follow=True, callback='parse_image'),
+
+		Rule(LinkExtractor(allow=('/celebrity/\d+/?$')), follow=True, callback='parse_actor'),
+		Rule(LinkExtractor(allow=('/celebrity/\d+/\?from=showing$')), follow=True, callback='parse_actor'),
+		Rule(LinkExtractor(allow=('/celebrity/\d+/photos/$')), follow=True, callback='parse_photo'),
+		Rule(LinkExtractor(allow=('/celebrity/\d+/photos\?type=C&start=\d+&sortby=vote&size=a&subtype=a$')), follow=True, callback='parse_photo'),
 	]
 	
 	def parse_movie(self, response):
 		x = Selector(response)
 		
 		item = MovieItem()
+		item['typ'] = 'movie'
 		#item['subject_id'] = response.url.split("/")[-1]
 		#item['url'] = response.url
 		item['mid'] = self.get_mid(response)
@@ -48,10 +69,15 @@ class MovieSpider(CrawlSpider):
 		yield item
 
 	def get_mid(self, response):
-		if response.url[-1] == '/':
+		if response.url[-1] == 'e':
+			#response.url = https://movie.douban.com/subject/26582012/?from=subject-page
 			return response.url.split('/')[-2]
 		else:
-			return response.url.split('/')[-1]
+			#response.url = https://movie.douban.com/subject/26582012/
+			if response.url[-1] == '/':
+				return response.url.split('/')[-2]
+			else:
+				return response.url.split('/')[-1]
 
 	def get_name(self, response):
 		return response.xpath('//div[@id="content"]/h1/span/text()').extract()[0]
@@ -124,3 +150,182 @@ class MovieSpider(CrawlSpider):
 	def get_runtime(self, response):
 		arr = response.xpath(u'//span[@property="v:runtime"]/@content').extract()
 		return string.atoi(arr[0]) if any(arr) else 0
+
+	def parse_image(self, response):
+		mid = response.url.split('/')[4]
+		urls = response.xpath("//div[@class='cover']/a/img/@src").extract()
+		for url in urls:
+			i = ImageItem()
+			i['typ'] = 'image'
+			i['mid'] = mid
+			i['url'] = url.replace('thumb','photo')
+			yield i
+
+	def parse_photo(self, response):
+		mid = response.url.split('/')[4]
+		urls = response.xpath("//div[@class='cover']/a/img/@src").extract()
+		for url in urls:
+			i = ImageItem()
+			i['typ'] = 'photo'
+			i['mid'] = mid
+			i['url'] = url.replace('thumb','photo')
+			yield i
+
+	############################################
+	# Actor
+	############################################
+	def parse_actor(self, response):
+		item = ActorItem()
+		item['typ'] = 'actor'
+		item['aid'] = self.get_aid(response)
+		item['name'] = self.get_actor_name(response)
+		item['gender'] = self.get_gender(response)
+		item['constellation'] = self.get_constellation(response)
+		item['birthday'] = self.get_birthday(response)
+		item['birthplace'] = self.get_birthplace(response)
+		item['profession'] = self.get_profession(response)
+		item['imdb'] = self.get_imdb(response)
+		item['family'] = self.get_family(response)
+		item['fname'] = self.get_fname(response)
+		item['cname'] = self.get_cname(response)
+
+		yield item
+
+	def get_aid(self, response):
+		if response.url[-1] == 'g':
+			#response.url = https://movie.douban.com/celebrity/1049485/?from=showing
+			return response.url.split('/')[-2]
+		else:
+			#response.url = https://movie.douban.com/celebrity/1049485/
+			if response.url[-1] == '/':
+				return response.url.split('/')[-2]
+			else:
+				return response.url.split('/')[-1]
+
+	def get_actor_name(self, response):
+		return response.xpath('//div[@id="content"]/h1/text()').extract()[0]
+
+	def get_gender(self, response):
+		arr = response.xpath(u'//span[contains(text(),"性别")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"性别")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u'F'
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			gender = right_text[n_pos+1:brace_pos].strip()
+			return u'F' if gender == u'女' else u'M'
+		else:
+			return u'F'
+
+	def get_constellation(self, response):
+		arr = response.xpath(u'//span[contains(text(),"星座")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"星座")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u''
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			return right_text[n_pos+1:brace_pos].strip()
+		else:
+			return u''
+
+	def get_birthday(self, response):
+		arr = response.xpath(u'//span[contains(text(),"出生日期")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"出生日期")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u''
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			return right_text[n_pos+1:brace_pos].strip()
+		else:
+			return u''
+
+	def get_birthplace(self, response):
+		arr = response.xpath(u'//span[contains(text(),"出生地")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"出生地")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u''
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			return right_text[n_pos+1:brace_pos].strip()
+		else:
+			return u''
+
+	def get_profession(self, response):
+		arr = response.xpath(u'//span[contains(text(),"职业")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"职业")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u''
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			text = right_text[n_pos+1:brace_pos].strip()
+			return text.replace(' / ' , ',')
+		else:
+			return u''
+
+	def get_imdb(self, response):
+		arr = response.xpath(u'//span[contains(text(),"imdb编号")]/following-sibling::a').extract()
+		if any(arr):
+			imdb_link = response.xpath(u'//span[contains(text(),"imdb编号")]/following-sibling::a/@href').extract()
+			imdb = response.xpath(u'//span[contains(text(),"imdb编号")]/following-sibling::a/text()').extract()
+			return imdb
+		else:
+			return u''
+        
+	def get_family(self, response):
+		arr = response.xpath(u'//span[contains(text(),"家庭成员")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"家庭成员")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u''
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			return right_text[n_pos+1:brace_pos].strip()
+		else:
+			return u''
+
+	def get_fname(self, response):
+		arr = response.xpath(u'//span[contains(text(),"更多外文名")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"更多外文名")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u''
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			text = right_text[n_pos+1:brace_pos].strip()
+			return text.replace(' / ' , ',')
+		else:
+			return u''
+
+	def get_cname(self, response):
+		arr = response.xpath(u'//span[contains(text(),"更多中文名")]/text()').extract()
+		if any(arr):
+			parent_text = response.xpath(u'//span[contains(text(),"更多中文名")]/parent::*').extract()[0]
+			comma_pos = parent_text.find(u": ")
+			if comma_pos == -1:
+				return u''
+			right_text = parent_text[comma_pos+1:]
+			n_pos = right_text.find('\n')
+			brace_pos = right_text.find('<')
+			text = right_text[n_pos+1:brace_pos].strip()
+			return text.replace(' / ' , ',')
+		else:
+			return u''
