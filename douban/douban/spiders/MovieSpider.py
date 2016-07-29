@@ -19,7 +19,9 @@ class MovieSpider(CrawlSpider):
 		'https://movie.douban.com/subject/26599625/',
 		'https://movie.douban.com/tag/%E7%BA%AA%E5%BD%95%E7%89%87',
 		'https://movie.douban.com/subject/10741871/',
-		'https://movie.douban.com/celebrity/1049485/'
+		'https://movie.douban.com/celebrity/1049485/',
+		'https://movie.douban.com/subject/26599625/all_photos',
+		'https://movie.douban.com/subject/26599625/photos?type=S',
 	]
 
 	rules = [
