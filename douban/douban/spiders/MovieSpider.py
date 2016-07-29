@@ -22,6 +22,14 @@ class MovieSpider(CrawlSpider):
 		'https://movie.douban.com/celebrity/1049485/',
 		'https://movie.douban.com/subject/26599625/all_photos',
 		'https://movie.douban.com/subject/26599625/photos?type=S',
+
+		'https://movie.douban.com/tag/%E6%83%8A%E6%82%9A',
+		'https://movie.douban.com/subject/3011051/',
+		'https://movie.douban.com/subject/3011051/photos?type=S',
+		'https://movie.douban.com/celebrity/1054442/',
+		'https://movie.douban.com/celebrity/1054442/photos/',
+		'https://movie.douban.com/subject/1307332/',
+		'https://movie.douban.com/subject/1307332/photos?type=S',
 	]
 
 	rules = [
