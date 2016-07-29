@@ -15,8 +15,28 @@ class QuestionSpider(CrawlSpider):
 	allowed_domains = ['zhihu.com']
 	start_urls = [
 		'https://www.zhihu.com/explore',
-#		'https://www.zhihu.com/question/41351785',
-#		'https://www.zhihu.com/topic/19553622',
+		'https://www.zhihu.com/question/41351785',
+		'https://www.zhihu.com/topic/19553622',
+
+		'http://www.zhihu.com/question/29018597/answer/109979756',
+		'http://www.zhihu.com/people/caosanran',
+		'http://www.zhihu.com/topic/19551557',
+		'http://www.zhihu.com/question/26192324/answer/113604184',
+		'http://zhuanlan.zhihu.com/p/21773544',
+		'http://www.zhihu.com/question/29018597/answer/109979756',
+		'http://zhuanlan.zhihu.com/p/21758279',
+		'https://www.zhihu.com/question/19929609',
+		'https://www.zhihu.com/question/29265587',
+		'https://www.zhihu.com/topic/19553298/hot',
+		'https://www.zhihu.com/question/22532884',
+		'https://www.zhihu.com/topic/19550434/hot',
+		'https://www.zhihu.com/question/48831736',
+		'https://www.zhihu.com/topic/19551388',
+		'https://www.zhihu.com/topic/19614354',
+		'https://www.zhihu.com/question/30306770',
+		'https://www.zhihu.com/question/27353314',
+		'https://www.zhihu.com/topic/19727716',
+		'https://www.zhihu.com/question/30407955',
 	]
 
 	rules = (
@@ -27,6 +47,12 @@ class QuestionSpider(CrawlSpider):
 		Rule(LinkExtractor(allow=r'/topic/\d+/hot$'), callback='parse_topic'),
 		Rule(LinkExtractor(allow=r'/question/\d+$'), callback='parse_question', follow=True),
 		Rule(LinkExtractor(allow=r'/question/\d+/answer/\d+'), callback='parse_answer'),
+		Rule(LinkExtractor(allow=r'/people/[^/]+', allow_domains=['zhihu.com']), callback='parse_people',follow=True),
+
+		Rule(LinkExtractor(allow=r'/topic/\d+$'), follow=True),
+		Rule(LinkExtractor(allow=r'/topic/\d+/hot$'), follow=True),
+		Rule(LinkExtractor(allow=r'/question/\d+$'),  follow=True),
+		Rule(LinkExtractor(allow=r'/question/\d+/answer/\d+'), follow=True),
 		Rule(LinkExtractor(allow=r'/people/[^/]+', allow_domains=['zhihu.com']), callback='parse_people',follow=True),
 	)
 
