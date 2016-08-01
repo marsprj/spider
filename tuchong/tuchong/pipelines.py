@@ -53,4 +53,5 @@ class TuPipeline(object):
 
     def save_image(self, url, name):
         fpath = os.path.join(self.base_dir, name)
-        urllib.urlretrieve(url, fpath)
+        if os.path.exists(fpath) == False:
+		urllib.urlretrieve(url, fpath)
