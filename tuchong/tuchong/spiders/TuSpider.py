@@ -16,7 +16,7 @@ class TuSpider(CrawlSpider):
 	start_urls = [
 		#'https://www.tuchong.com/explore',
 		#'https://tuchong.com/1466846/',
-		u'https://tuchong.com/tags/%E4%BA%BA%E5%83%8F/'，
+		u'https://tuchong.com/tags/%E4%BA%BA%E5%83%8F/',
 		u'https://tuchong.com/1287992/13331141/',
 		u'https://tuchong.com/287158/13325154/',
 		u'https://tuchong.com/395783/13325515/',
@@ -43,15 +43,12 @@ class TuSpider(CrawlSpider):
 		Rule(LinkExtractor(allow=r'/categories/subject/\?page=\d+/$'), follow=True),	
 		Rule(LinkExtractor(allow=r'/\d+/\d+/'), follow=True, callback='parse_image'),
 		Rule(LinkExtractor(allow=r'/\d+/$'), follow=True, callback='parse_0')
-		https://tuchong.com/categories/subject/?page=5
 	)
 
 	def parse_0(sefl, response):
-		print "!!!!!!##############################"
 		print response.url 
 
 	def parse_image(self, response):
-		print "sssssssssssssssssssssssssssssssssssssssssssssssssssss"
 		if self.is_taget(response):
 			t = TuItem()
 			t['author'] = self.get_author(response)
@@ -78,6 +75,7 @@ class TuSpider(CrawlSpider):
 		return arr[0] if any(arr) else u''
 
 	def is_taget(self, response):
+		return True
 		#arr = response.xpath(u"//a[text()='花卉'] or //a[text()='']").extract()
 		#arr = response.xpath(u"//a[text()='花卉']").extract()
 		arr = response.xpath(u"//a[@class='tag' and (text()='美女' or text()='少女')]").extract()
