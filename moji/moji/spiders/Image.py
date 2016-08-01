@@ -8,7 +8,9 @@ from moji.items import ImageItem
 
 class ImageSpider(CrawlSpider):
 	name = u'moji'
-	allowed_domains = ['moji.com']
+	allowed_domains = [
+		'moji.com',
+	]
 	start_urls = [
 		'http://tianqi.moji.com/liveview',
 	]
