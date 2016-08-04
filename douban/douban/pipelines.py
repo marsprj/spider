@@ -135,14 +135,14 @@ class MoviePipeline(object):
         name = url.split('/')[-1]
         fname = mid + "_" + name
         fpath =os.path.join(self.image_dir, fname) 
-        if os.exists(fpath) == False:
+        if os.path.exists(fpath) == False:
         	urllib.urlretrieve(url, fpath)
 
     def save_photo(self, mid, url):
         name = url.split('/')[-1]
         fname = mid + "_" + name
         fpath =os.path.join(self.photo_dir, fname)
-        if os.exists(fpath) == False:
+        if os.path.exists(fpath) == False:
         	urllib.urlretrieve(url, fpath)
 
     def process_actor(self, item):
