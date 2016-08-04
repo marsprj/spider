@@ -6,8 +6,6 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 from twisted.enterprise import adbapi
-import MySQLdb
-import MySQLdb.cursors
 import psycopg2
 import string
 import os
