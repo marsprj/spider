@@ -55,10 +55,13 @@ class MovieSpider(CrawlSpider):
 		Rule(LinkExtractor(allow=('/subject/\d+/photos\?type=S$')), follow=True, callback='parse_image'),
 		Rule(LinkExtractor(allow=('/subject/\d+/photos\?type=S&start=\d+&sortby=vote&size=a&subtype=a$')), follow=True, callback='parse_image'),
 
-		Rule(LinkExtractor(allow=('/celebrity/\d+/?$')), follow=True, callback='parse_actor'),
-		Rule(LinkExtractor(allow=('/celebrity/\d+/\?from=showing$')), follow=True, callback='parse_actor'),
-		Rule(LinkExtractor(allow=('/celebrity/\d+/photos/$')), follow=True, callback='parse_photo'),
-		Rule(LinkExtractor(allow=('/celebrity/\d+/photos\?type=C&start=\d+&sortby=vote&size=a&subtype=a$')), follow=True, callback='parse_photo'),
+		# Rule(LinkExtractor(allow=('/celebrity/\d+/?$')), follow=True, callback='parse_actor'),
+		# Rule(LinkExtractor(allow=('/celebrity/\d+/\?from=showing$')), follow=True, callback='parse_actor'),
+		# Rule(LinkExtractor(allow=('/celebrity/\d+/photos/$')), follow=True, callback='parse_photo'),
+		# Rule(LinkExtractor(allow=('/celebrity/\d+/photos\?type=C&start=\d+&sortby=vote&size=a&subtype=a$')), follow=True, callback='parse_photo'),
+
+		# Rule(LinkExtractor(allow=('/celebrity/\d+/\movies\?sortby=time&format=pic&')), follow=True),
+		# Rule(LinkExtractor(allow=('/celebrity/\d+/\movies\?start=\d+&format=pic&sortby=time&')), follow=True),
 	]
 	
 	def parse_movie(self, response):
